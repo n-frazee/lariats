@@ -1,0 +1,73 @@
+set param_list [list\
+"$common/charmm_toppar/par_all36m_prot.prm" \
+"$common/charmm_toppar/par_all36_na.prm" \
+"$common/charmm_toppar/par_all36_carb.prm" \
+"$common/charmm_toppar/par_all36_lipid.prm" \
+"$common/charmm_toppar/par_all36_cgenff.prm" \
+"$common/charmm_toppar/toppar_water_ions.str"]
+
+
+
+set temperature      310
+
+firsttimestep       0
+
+
+# Input
+paraTypeCharmm      on
+foreach p $param_list {
+parameters ${p}
+}
+
+
+# parameters for stochastic rescaling thermostat
+stochRescale on
+stochRescalePeriod 0.5
+stochRescaleTemp $temperature
+langevinPistonTemp $temperature
+
+
+# Force-Field Parameters
+exclude             scaled1-4
+1-4scaling          1.0
+cutoff              12.0
+switching           on
+switchdist          10.0
+pairlistdist        14.0
+
+# Integrator Parameters
+timestep            2.0  ;# 2fs/step
+rigidBonds          all  ;# needed for 2fs steps
+nonbondedFreq       1
+fullElectFrequency  2
+stepspercycle       20
+
+
+# Turned off because of compliant from log file with colvars
+wrapALL             off
+wrapWater           on
+
+# PME (for full-system periodic electrostatics)
+PME                 yes
+PMEGridSpacing      1.0
+
+
+
+# Constant Pressure Control (variable volume)
+useGroupPressure      yes ;# needed for rigidBonds
+useFlexibleCell       yes
+useConstantRatio      yes
+
+langevinPiston        on
+langevinPistonTarget  1.01325 ;#  in bar -> 1 atm
+langevinPistonPeriod  200.0
+langevinPistonDecay   100.0
+
+restartfreq         10000    ;# 1,000 steps = every 1 ps
+dcdfreq             10000
+xstFreq             10000
+outputEnergies      10000
+outputPressure      10000
+
+# add margin keyword to allow for more fluctuation in PBCs
+margin          2.0
