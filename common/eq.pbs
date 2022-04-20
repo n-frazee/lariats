@@ -1,0 +1,18 @@
+# @Author: nfrazee
+# @Date:   2021-06-11T13:29:42-04:00
+# @Last modified by:   nfrazee
+# @Last modified time: 2021-06-16T10:28:04-04:00
+# @Comment:
+
+#!/bin/bash
+
+#PBS -q jbmertz
+#PBS -m ae
+#PBS -M ncf0003@mix.wvu.edu
+#PBS -l nodes=1:ppn=8
+#PBS -l walltime=4:00:00:00
+
+module load namd/2.13_single_node
+cd $PBS_O_WORKDIR
+
+	charmrun +p8 $NAMD eq.conf > eq.log
